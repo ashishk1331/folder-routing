@@ -1,3 +1,5 @@
-export default function Home(args) {
-	return "Home";
+export default function Home(route) {
+	return {
+		route,
+	};
 }

@@ -1,12 +1,13 @@
 {
   "name": "folder-routing",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A folder based router.",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon ."
   },
+  "bin": "./index.js",
   "keywords": [
     "folder",
     "router"
@@ -14,6 +15,10 @@
   "author": "Ashish Khare",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^5.3.0",
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
