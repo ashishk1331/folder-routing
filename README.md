@@ -1,3 +1,5 @@
+![Banner image](banner.png)
+
 # folder-routing
 
 [![Downloads](https://badgers.space/npm/name/folder-routing)](https://www.npmjs.com/package/folder-routing)
