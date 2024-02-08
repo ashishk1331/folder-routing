@@ -1,5 +1,6 @@
 export default function Home(route) {
 	return {
-		route,
+		"id": 2,
+		"type": "Kitchen"
 	};
 }

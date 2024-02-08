@@ -12,11 +12,9 @@ import { get_route } from "./util/route.js";
 import { title } from "./util/banner.js";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-	console.log(`Example app running on: http://localhost:${PORT}`);
-});
+app.listen(PORT);
 
 function GET(route, fn) {
 	app.get(route, fn);
@@ -42,21 +40,21 @@ async function get_files(folder_name, root) {
 	}
 }
 
-async function get_data(root, prev_path) {
+async function get_data(root, prev_path, routes) {
 	if (Boolean(root)) {
 		prev_path = path.join(prev_path, root.name);
 		for (let file of root.children) {
 			if (file.isDirectory) {
-				await get_data(file, prev_path);
+				await get_data(file, prev_path, routes);
 			} else {
 				let file_path = path.join(prev_path, file.name);
 				let route = get_route(file_path);
-				console.log(chalk.green(route));
+				routes.push(route);
 
 				const fileUrl = new URL(`file://${path.resolve(file_path)}`);
 				let say = await import(fileUrl);
 				GET(route, (req, res) => {
-					res.send(say.default(route));
+					res.send(say.default(req));
 				});
 			}
 		}
@@ -64,18 +62,37 @@ async function get_data(root, prev_path) {
 }
 
 async function main() {
-	console.log(chalk.bgCyan.black("                  "));
-	console.log(chalk.bgCyan.black(" (folder-routing) "));
-	console.log(chalk.bgCyan.black("                  \n"));
+	const START_TIME = Date.now();
 
 	const folder_name = path.join(cwd(), "app");
 	const root = new Folder("app", []);
 	await get_files(folder_name, root);
-	console.log(title("Folder Structure:"));
-	root.print();
 
-	console.log(title("Routes:"));
-	await get_data(root, cwd());
+	const width = root.maxWidth();
+
+	let routes = [];
+	await get_data(root, cwd(), routes);
+
+	const END_TMIE = Date.now();
+
+	const TIME_ELAPSED = END_TMIE - START_TIME;
+	console.clear();
+	console.log(
+		chalk.italic.bgCyan.black(" (folder-routing) "),
+		chalk.cyan("v0.0.2"),
+		chalk.gray("ready in"),
+		chalk.white(TIME_ELAPSED),
+		chalk.gray("ms"),
+		"\n",
+	);
+
+	console.group();
+	console.log("Local \t" + chalk.green(`http://localhost:${PORT}/`));
+	console.log(chalk.italic.gray("API is hosted locally."));
+	console.groupEnd();
+
+	console.log(title("Folder Structure:"));
+	root.print([], 0, width); // routes array, level, max width of tree
 }
 
 main();

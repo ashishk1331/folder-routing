@@ -1,5 +1,6 @@
-export default function Home(route) {
+export default function Home(request) {
+	console.log(request.query);
 	return {
-		route,
+		"route": "Home",
 	};
 }
