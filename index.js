@@ -79,7 +79,7 @@ async function main() {
 	console.clear();
 	console.log(
 		chalk.italic.bgCyan.black(" (folder-routing) "),
-		chalk.cyan("v0.0.2"),
+		chalk.cyan("v0.0.3"),
 		chalk.gray("ready in"),
 		chalk.white(TIME_ELAPSED),
 		chalk.gray("ms"),
