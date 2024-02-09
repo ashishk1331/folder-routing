@@ -1,6 +1,7 @@
-export default function Home(request) {
-	console.log(request.query);
+export default async function Home(request) {
+	let resp = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+	resp = await resp.json();
 	return {
-		"route": "Home",
+		route: resp,
 	};
 }

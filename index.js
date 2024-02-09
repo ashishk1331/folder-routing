@@ -5,6 +5,7 @@ import express from "express";
 import chalk from "chalk";
 import { cwd } from "node:process";
 import path from "path";
+import { get_adapters } from "./util/network.js";
 
 import { Folder } from "./class/Folder.js";
 import { File } from "./class/File.js";
@@ -53,8 +54,9 @@ async function get_data(root, prev_path, routes) {
 
 				const fileUrl = new URL(`file://${path.resolve(file_path)}`);
 				let say = await import(fileUrl);
-				GET(route, (req, res) => {
-					res.send(say.default(req));
+				GET(route, async (req, res) => {
+					let resp = await say.default(req);
+					res.send(resp);
 				});
 			}
 		}
@@ -63,6 +65,11 @@ async function get_data(root, prev_path, routes) {
 
 async function main() {
 	const START_TIME = Date.now();
+
+	let addrs = get_adapters();
+	for(const each of addrs){
+		app.listen(PORT, each);
+	}
 
 	const folder_name = path.join(cwd(), "app");
 	const root = new Folder("app", []);
@@ -79,7 +86,7 @@ async function main() {
 	console.clear();
 	console.log(
 		chalk.italic.bgCyan.black(" (folder-routing) "),
-		chalk.cyan("v0.0.3"),
+		chalk.cyan("v0.0.4"),
 		chalk.gray("ready in"),
 		chalk.white(TIME_ELAPSED),
 		chalk.gray("ms"),
@@ -88,11 +95,16 @@ async function main() {
 
 	console.group();
 	console.log("Local \t" + chalk.green(`http://localhost:${PORT}/`));
+	// check for network adpaters
+	for(const each of addrs){
+		console.log("Network \t" + chalk.green(`http://${each}:${PORT}/`));
+	}
 	console.log(chalk.italic.gray("API is hosted locally."));
 	console.groupEnd();
 
 	console.log(title("Folder Structure:"));
 	root.print([], 0, width); // routes array, level, max width of tree
+
 }
 
 main();
