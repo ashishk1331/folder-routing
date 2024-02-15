@@ -25,6 +25,5 @@ export function get_adapters(argument) {
 		}
 	}
 
-	console.log(addresses);
 	return addresses;
 }

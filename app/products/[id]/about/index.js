@@ -1,6 +1,5 @@
-export default function (request) {
-	
+export default function (args) {
 	return {
-		"about": request.params.id,
+		about: "oven",
 	};
 }

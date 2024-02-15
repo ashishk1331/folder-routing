@@ -63,7 +63,7 @@ export class Folder {
 
     let found_index_js = false;
     for (let file of this.children) {
-      if (file.name === "index.js") {
+      if (file.name === "index.js" || file.name === "data.json") {
         found_index_js = true;
       }
       if (file.isDirectory) {

@@ -1,84 +1,26 @@
 #!/usr/bin/env node
 
-import { promises as fs } from "fs";
+// Libs
 import express from "express";
 import chalk from "chalk";
-import { cwd } from "node:process";
-import path from "path";
-import { get_adapters } from "./util/network.js";
 
-import { Folder } from "./class/Folder.js";
-import { File } from "./class/File.js";
-import { get_route } from "./util/route.js";
-import { title } from "./util/banner.js";
+// Components
+import { getApp, showTree } from "./src/index.js";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT);
-
-function GET(route, fn) {
-	app.get(route, fn);
-}
-
-async function get_files(folder_name, root) {
-	let files;
-	try {
-		files = await fs.readdir(folder_name, { withFileTypes: true });
-	} catch (err) {
-		if (err.code === "ENOENT") {
-			console.log('"app" folder not found.');
-		}
-	}
-	for (let file of files) {
-		if (file.isDirectory()) {
-			let folder = new Folder(file.name);
-			root.children.push(folder);
-			await get_files(path.join(folder_name, file.name), folder);
-		} else {
-			root.children.push(new File(file.name));
-		}
-	}
-}
-
-async function get_data(root, prev_path, routes) {
-	if (Boolean(root)) {
-		prev_path = path.join(prev_path, root.name);
-		for (let file of root.children) {
-			if (file.isDirectory) {
-				await get_data(file, prev_path, routes);
-			} else {
-				let file_path = path.join(prev_path, file.name);
-				let route = get_route(file_path);
-				routes.push(route);
-
-				const fileUrl = new URL(`file://${path.resolve(file_path)}`);
-				let say = await import(fileUrl);
-				GET(route, async (req, res) => {
-					let resp = await say.default(req);
-					res.send(resp);
-				});
-			}
-		}
-	}
-}
+// Helper
+import { get_adapters } from "./src/util/network.js";
 
 async function main() {
 	const START_TIME = Date.now();
+
+	const PORT = process.env.PORT || 3000;
+	const app = await getApp();
+	app.listen(PORT);
 
 	let addrs = get_adapters();
 	for(const each of addrs){
 		app.listen(PORT, each);
 	}
-
-	const folder_name = path.join(cwd(), "app");
-	const root = new Folder("app", []);
-	await get_files(folder_name, root);
-
-	const width = root.maxWidth();
-
-	let routes = [];
-	await get_data(root, cwd(), routes);
 
 	const END_TMIE = Date.now();
 
@@ -86,7 +28,7 @@ async function main() {
 	console.clear();
 	console.log(
 		chalk.italic.bgCyan.black(" (folder-routing) "),
-		chalk.cyan("v0.0.4"),
+		chalk.cyan("v" + "0.2.0"),
 		chalk.gray("ready in"),
 		chalk.white(TIME_ELAPSED),
 		chalk.gray("ms"),
@@ -102,8 +44,7 @@ async function main() {
 	console.log(chalk.italic.gray("API is hosted locally."));
 	console.groupEnd();
 
-	console.log(title("Folder Structure:"));
-	root.print([], 0, width); // routes array, level, max width of tree
+	showTree();
 
 }
 

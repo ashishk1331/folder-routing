@@ -27,7 +27,7 @@ export function get_route(relative_path) {
       chunks[i] = ":" + chunks[i].substr(1, chunks[i].length - 2);
     }
 
-    if(chunks[i] === "index.js"){
+    if(chunks[i] === "index.js" || chunks[i] === "data.json"){
       last_index = i;
       break;
     }

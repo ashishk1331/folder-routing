@@ -65,14 +65,14 @@ Steps to create an API:
 	```
 	/
 	└── app/
-	    ├── users/             # Simple Route
-	    │   └── index.js
-	    ├── [userID]/          # Dynamic Route
-	    │   └── index.js
-	    ├── badge/
-		│    └── [...rest]/    # Catch-all Segment Route
-		│        └── index.js
-	    └── index.js
+		├── users/             # Simple Route
+		│   └── index.js
+		├── [userID]/          # Dynamic Route
+		│   └── index.js
+		├── badge/
+		│	└── [...rest]/    # Catch-all Segment Route
+		│		└── index.js
+		└── index.js
 	```
 
 	Types of supported routes:
@@ -101,6 +101,30 @@ Steps to create an API:
 	}
 	```
 
+	If you want to intercept a particular method, you can write specific methods for it. eg: Here is the example for post requests,
+
+	```js
+	export function POST(request) {
+		// body ...
+	}
+	```
+
+	Similarly, you can write named methods for `GET`, `PUT` and `DELETE`. The functions should be in upper-case. Also, the default export wires to the GET request, by default.
+
+2. the `data.json` file,
+	
+	Alternatively, you can use `data.json` file to serve data. The framework will automatically serve the data from the file. The file should be named `data.json`.
+
+	```json
+	[
+		{
+			"id": "abc",
+			"name": "Ashish Khare"
+		}
+	]
+	```
+
+
 3. the `npx` command,
 	
 	Once you're done arranging the data across folders. Run the following command to start up the server.
@@ -111,14 +135,29 @@ Steps to create an API:
 
 	Now, you've a working API.
 
+## Tests
+I've written a handful of tests to check the functionality of the framework. You can run the tests using the following command: (It uses the `app` folder described in the root directory.)
+
+```bash
+npm test
+```
+
+All tests can be found in `__test__` folder, and the tests are divided into two categories:
+1. Positive Tests
+	These are listed inside `API.test.js` file. They mainly test the functionality of the framework and the API for positive results. Like if a route were to return any data, then they check for it.
+2. Negative Tests
+	These are listed inside `NEGATIVE.test.js` file. Contrary to positive tests, these check for pre-made errors that should be silent and should not disrupt entire flow. Like if a route were to return an error, then they check for it.
+
+
 ## TO-DO
 
-- [] add *Args* support(especially for "host across network" feature)
-- [] *JSON* file support
-- [] tons of *Tests*(API testing)
-- [] maybe more *Documentation*
-- [] set up the *Website*
-- [] [not advised] write custom *HTTP server*
+- [ ] add *Args* support(especially for "host across network" feature)
+- [x] *POST* requests (along with *PUT*, *DELETE*, *GET*)
+- [x] *JSON* file support
+- [x] tons of *Tests*(API testing) (Working on it...)
+- [x] maybe more *Documentation*
+- [ ] set up the *Website*
+- [ ] [not advised] write custom *HTTP server*
 
 ## Maintainers
 
